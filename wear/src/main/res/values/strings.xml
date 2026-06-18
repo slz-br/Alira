@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Alira</string>
+    <string name="hello_world">Olá, %1$s!</string>
+</resources>
