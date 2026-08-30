@@ -8,7 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import me.slz_br.alira.presentation.screens.*
 import me.slz_br.alira.presentation.screens.HeartRate.HeartRateScreen
-import me.slz_br.alira.presentation.screens.settings.AcessibilitySettingsScreen
+import me.slz_br.alira.presentation.screens.settings.AccessibilitySettingsScreen
 import me.slz_br.alira.presentation.screens.settings.SettingsScreen
 
 const val PERMISSION = android.Manifest.permission.BODY_SENSORS
@@ -38,11 +38,11 @@ class MainActivity : ComponentActivity() {
                 }
                 composable(AliraRoutes.Settings.route) {
                     SettingsScreen(
-                        onAcessibilityClick = { navController.navigate(AliraRoutes.Accessibility.route) }
+                        onAccessibilityClick = { navController.navigate(AliraRoutes.Accessibility.route) }
                     )
                 }
                 composable(AliraRoutes.Accessibility.route) {
-                    AcessibilitySettingsScreen()
+                    AccessibilitySettingsScreen()
                 }
                 composable(AliraRoutes.Info.route) {
                     InfoScreen()

@@ -1,10 +1,10 @@
 package me.slz_br.alira.presentation.screens
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.wear.compose.foundation.lazy.TransformingLazyColumn
 import androidx.wear.compose.foundation.lazy.rememberTransformingLazyColumnState
 import androidx.wear.compose.material3.AppScaffold
@@ -53,3 +53,7 @@ fun InfoScreen() {
         }
     }
 }
+
+@Preview
+@Composable
+private fun InfoScreenPreview() = InfoScreen()

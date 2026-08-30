@@ -9,8 +9,10 @@ import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.wear.compose.foundation.lazy.rememberTransformingLazyColumnState
 import androidx.wear.compose.material3.AppScaffold
@@ -18,8 +20,12 @@ import androidx.wear.compose.material3.ScreenScaffold
 import androidx.wear.compose.material3.Text
 import me.slz_br.alira.presentation.theme.AliraTheme
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.wear.compose.foundation.lazy.TransformingLazyColumn
 import androidx.wear.compose.material3.Icon
+import androidx.wear.compose.material3.ListHeader
 import me.slz_br.alira.R
 
 object HeartRate : SensorEventListener {
@@ -44,6 +50,18 @@ object HeartRate : SensorEventListener {
                         verticalArrangement = Arrangement.Center,
                         contentPadding = contentPadding
                     ) {
+                        item {
+                            ListHeader(modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                            ) {
+                                Text(
+                                    textAlign = TextAlign.Center,
+                                    fontWeight = FontWeight(800),
+                                    text = "Sinais Vitais"
+                                )
+                            }
+                        }
                         item {
                             Row() {
                                 Icon(
@@ -71,4 +89,10 @@ object HeartRate : SensorEventListener {
 
         currentBPM.floatValue = bpm
     }
+}
+
+@Preview()
+@Composable
+private fun HeartRateScreenPreview() {
+    HeartRate.HeartRateScreen()
 }

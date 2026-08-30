@@ -1,20 +1,15 @@
 package me.slz_br.alira.presentation.screens
 
-import android.speech.tts.TextToSpeech
-import android.speech.tts.Voice
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.wear.compose.foundation.lazy.TransformingLazyColumn
 import androidx.wear.compose.foundation.lazy.rememberTransformingLazyColumnState
 import androidx.wear.compose.material3.AppScaffold
-import androidx.wear.compose.material3.Button
 import androidx.wear.compose.material3.ButtonDefaults
 import androidx.wear.compose.material3.EdgeButton
 import androidx.wear.compose.material3.FilledIconButton
@@ -22,7 +17,6 @@ import androidx.wear.compose.material3.Icon
 import androidx.wear.compose.material3.ListHeader
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.ScreenScaffold
-import androidx.wear.compose.material3.SurfaceTransformation
 import androidx.wear.compose.material3.Text
 import androidx.wear.compose.material3.lazy.rememberTransformationSpec
 import androidx.wear.compose.material3.lazy.transformedHeight
@@ -62,9 +56,8 @@ fun WearApp(
                                 Modifier
                                     .fillMaxWidth()
                                     .transformedHeight(this, transformationSpec),
-                            transformation = SurfaceTransformation(transformationSpec),
                         ) {
-                            Text(text = stringResource(R.string.hello_world, "Usuário!"))
+                            Text(fontWeight = FontWeight(800), text = "Alira")
                         }
                     }
                     item {
@@ -72,7 +65,6 @@ fun WearApp(
                             onClick = onHeartRateClick,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .transformedHeight(this, transformationSpec)
                         ) {
                             Row {
                                 Icon(
@@ -80,7 +72,7 @@ fun WearApp(
                                     contentDescription = "Botão de frequência cardiaca"
                                 )
                                 Text(
-                                    text = "Freq. Cardiaca"
+                                    text = "Sinais Vitais"
                                 )
                             }
                         }
@@ -90,7 +82,6 @@ fun WearApp(
                             onClick = onGenerateReportClick,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .transformedHeight(this, transformationSpec),
                         ) {
                             Row {
                                 Icon(
@@ -119,4 +110,15 @@ fun WearApp(
             }
         }
     }
+}
+
+@Preview
+@Composable
+private fun HomeScreenPreview() {
+    WearApp(
+        onHeartRateClick = {},
+        onGenerateReportClick = {},
+        onSettingsClick = {},
+        onInfoScreenClick = {}
+    )
 }
