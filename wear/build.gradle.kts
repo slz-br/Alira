@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId = "me.slz_br.alira"
-        minSdk = 30
+        minSdk = 36
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -60,7 +60,9 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
 
     implementation(libs.androidx.activity)
-    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
+    implementation(libs.androidx.navigation3.compose)
     implementation(libs.kotlinx.serialization)
     implementation(libs.androidx.fragment)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
