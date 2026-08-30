@@ -40,6 +40,7 @@ android {
 dependencies {
 
 
+    @Suppress("AvoidDuplicateDependencies")
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.foundation)
@@ -52,6 +53,7 @@ dependencies {
     implementation(libs.androidx.wear.tooling.preview)
     implementation(libs.compose.ui.tooling)
     implementation(libs.play.services.wearable)
+    @Suppress("AvoidDuplicateDependencies")
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
@@ -61,6 +63,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization)
     implementation(libs.androidx.fragment)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     implementation(libs.androidx.health.services.client)
 }
