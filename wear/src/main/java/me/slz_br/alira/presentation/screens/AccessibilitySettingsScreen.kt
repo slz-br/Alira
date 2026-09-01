@@ -1,4 +1,4 @@
-package me.slz_br.alira.presentation.screens.settings
+package me.slz_br.alira.presentation.screens
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
