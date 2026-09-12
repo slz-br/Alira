@@ -2,11 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.READ_HEART_RATE"/>
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/>
     <uses-feature android:name="android.hardware.type.watch" />
     <uses-feature
-        android:name="android.hardware.sensor.heartrate"
+        android:name="android.hardware.sensor.hifi_sensors"
         android:required="true"
     />
 

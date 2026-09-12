@@ -1,11 +1,12 @@
 package me.slz_br.alira.presentation.screens
 
-import android.Manifest
+import android.Manifest.permission.ACTIVITY_RECOGNITION
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.Settings
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Row
@@ -33,7 +34,6 @@ import androidx.wear.compose.material3.lazy.rememberTransformationSpec
 import androidx.wear.compose.material3.lazy.transformedHeight
 import me.slz_br.alira.R
 import me.slz_br.alira.presentation.ActivityRecognitionPermissionTextProvider
-import me.slz_br.alira.presentation.MainActivity
 import me.slz_br.alira.presentation.PermissionDialog
 import me.slz_br.alira.presentation.viewmodels.HomeScreenViewModel
 import me.slz_br.alira.presentation.theme.AliraTheme
@@ -49,25 +49,19 @@ fun WearApp(
     AliraTheme {
         AppScaffold {
             val context = LocalContext.current
+            val activity = LocalActivity.current!!
+            val dialogueQueue = viewModel.visiblePermissionDialogQueue
 
-            val monitoringPermissionLauncher = rememberLauncherForActivityResult(
+            val activityRecognitionResultLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.RequestPermission(),
                 onResult = { isGranted ->
-                    viewModel.onPermissionResult(Manifest.permission.ACTIVITY_RECOGNITION, isGranted)
+                    viewModel.onPermissionResult(
+                        permission = ACTIVITY_RECOGNITION,
+                        isGranted = isGranted
+                    )
                 }
             )
 
-//            val multiplePermissionLauncher = rememberLauncherForActivityResult(
-//                contract = ActivityResultContracts.RequestMultiplePermissions(),
-//                onResult = { perms ->
-//                    perms.keys.forEach { permission ->
-//                        viewModel.onPermissionResult(
-//                            permission,
-//                            perms[permission] == true
-//                        )
-//                    }
-//                }
-//            )
             val listState = rememberTransformingLazyColumnState()
             val transformationSpec = rememberTransformationSpec()
             ScreenScaffold(
@@ -99,13 +93,16 @@ fun WearApp(
                     item {
                         FilledIconButton(
                             onClick = {
-                                monitoringPermissionLauncher.launch(
-                                    Manifest.permission.ACTIVITY_RECOGNITION
-                                )
-
-                                if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED) {
+                                if (ActivityCompat.checkSelfPermission(context, ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED) {
                                     onVitalsClick()
                                 }
+                                else {
+                                    activityRecognitionResultLauncher.launch(
+                                        input = ACTIVITY_RECOGNITION
+                                    )
+                                }
+
+                                activity.recreate()
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -117,19 +114,6 @@ fun WearApp(
                                 )
                                 Text(
                                     text = "Sinais Vitais"
-                                )
-                            }
-                            viewModel.visiblePermissionDialogueQueue.reversed().forEach { permission ->
-                                PermissionDialog(
-                                    permission = permission,
-                                    permissionTextProvider = when (permission) {
-                                        Manifest.permission.ACTIVITY_RECOGNITION -> ActivityRecognitionPermissionTextProvider
-                                        else -> error("Unknown requested permission")
-                                    },
-                                    isPermanentlyDeclined = MainActivity().shouldShowRequestPermissionRationale(permission),
-                                    onDismiss = {},
-                                    onOkClick = {},
-                                    onGoToAppSettings = { }
                                 )
                             }
                         }
@@ -164,6 +148,24 @@ fun WearApp(
                         }
                     }
                 }
+
+                dialogueQueue
+                    .reversed()
+                    .forEach { permission ->
+                        PermissionDialog(
+                            permissionTextProvider = when (permission) {
+                                ACTIVITY_RECOGNITION -> ActivityRecognitionPermissionTextProvider
+                                else -> return@forEach
+                            },
+                            isPermanentlyDeclined = !activity.shouldShowRequestPermissionRationale(permission),
+                            onDismiss = viewModel::dismissDialog,
+                            onOkClick = {
+                                viewModel.dismissDialog()
+                                activityRecognitionResultLauncher.launch(permission)
+                            },
+                            onGoToAppSettings = activity::openAppSettings
+                        )
+                    }
             }
         }
     }

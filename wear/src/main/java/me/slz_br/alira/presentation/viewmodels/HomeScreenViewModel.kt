@@ -2,22 +2,20 @@ package me.slz_br.alira.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
 
-class HomeScreenViewModel(): ViewModel() {
+class HomeScreenViewModel: ViewModel() {
 
-    val visiblePermissionDialogueQueue = mutableListOf<String>()
+    val visiblePermissionDialogQueue = mutableListOf<String>()
 
     fun dismissDialog() {
-        visiblePermissionDialogueQueue.removeAt(visiblePermissionDialogueQueue.lastIndex)
+        visiblePermissionDialogQueue.removeFirst()
     }
 
     fun onPermissionResult(
         permission: String,
         isGranted: Boolean
     ) {
-
-        if (!isGranted) {
-            visiblePermissionDialogueQueue.add(0, permission)
+        if (!isGranted && permission !in visiblePermissionDialogQueue) {
+            visiblePermissionDialogQueue.add(0, permission)
         }
-
     }
 }

@@ -1,12 +1,17 @@
 package me.slz_br.alira.presentation
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.wear.compose.material3.AlertDialog
+import androidx.wear.compose.material3.EdgeButton
 import androidx.wear.compose.material3.Text
 
 @Composable
 fun PermissionDialog(
-    permission: String,
     permissionTextProvider: PermissionTextProvider,
     isPermanentlyDeclined: Boolean,
     onDismiss: () -> Unit,
@@ -19,7 +24,35 @@ fun PermissionDialog(
         title = {
             Text("Permissão necessária")
         },
-        text = { Text(permissionTextProvider.getDescription(isPermanentlyDeclined)) },
+        text = {
+            Text(permissionTextProvider.getDescription(isPermanentlyDeclined))
+       },
+        edgeButton = {
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                EdgeButton(
+                    onClick = {
+                        if (isPermanentlyDeclined) {
+                            onGoToAppSettings()
+                        } else {
+                            onOkClick()
+                        }
+                    }
+                ) {
+                    Text(
+                        if (isPermanentlyDeclined) {
+                            "Dar permissão"
+                        }
+                        else {
+                            "Ok"
+                        },
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                    )
+                }
+            }
+        }
     )
 }
 

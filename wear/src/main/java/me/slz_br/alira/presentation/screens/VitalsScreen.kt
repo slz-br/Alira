@@ -23,6 +23,7 @@ import me.slz_br.alira.presentation.viewmodels.VitalScreenViewModel
 @Composable
     fun VitalsScreen(viewModel: VitalScreenViewModel) {
         AliraTheme {
+            val calories by viewModel.calories
             AppScaffold {
                 val listState = rememberTransformingLazyColumnState()
                 ScreenScaffold(
@@ -45,14 +46,12 @@ import me.slz_br.alira.presentation.viewmodels.VitalScreenViewModel
                             }
                         }
                         item {
-                            val calories: Double by viewModel.calories
                             Row {
                                 Icon(
                                     painter = painterResource(R.drawable.heart_rate),
                                     contentDescription = "Vital signs icon"
                                 )
                                 Text("Calorias: $calories")
-
                             }
                         }
                     }
