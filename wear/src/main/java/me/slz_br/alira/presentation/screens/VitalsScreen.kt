@@ -1,19 +1,11 @@
 package me.slz_br.alira.presentation.screens
 
-import android.content.Context
-import android.hardware.Sensor
-import android.hardware.SensorEvent
-import android.hardware.SensorEventListener
-import android.hardware.SensorManager
-import android.util.Log
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.wear.compose.foundation.lazy.rememberTransformingLazyColumnState
 import androidx.wear.compose.material3.AppScaffold
 import androidx.wear.compose.material3.ScreenScaffold
@@ -22,25 +14,16 @@ import me.slz_br.alira.presentation.theme.AliraTheme
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.wear.compose.foundation.lazy.TransformingLazyColumn
 import androidx.wear.compose.material3.Icon
 import androidx.wear.compose.material3.ListHeader
 import me.slz_br.alira.R
+import me.slz_br.alira.presentation.viewmodels.VitalScreenViewModel
 
-object HeartRate : SensorEventListener {
-
-    val currentBPM = mutableFloatStateOf(0f)
-
-    @Composable
-    fun HeartRateScreen() {
-        val ctx = LocalContext.current
-        ActivityResultContracts.RequestPermission()
-        val sensorManager = ctx.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        val hSensor = sensorManager.getDefaultSensor(Sensor.TYPE_HEART_RATE)
-        sensorManager.registerListener(this, hSensor, SensorManager.SENSOR_DELAY_FASTEST)
-
+@Composable
+    fun VitalsScreen(viewModel: VitalScreenViewModel) {
         AliraTheme {
+            val calories by viewModel.calories
             AppScaffold {
                 val listState = rememberTransformingLazyColumnState()
                 ScreenScaffold(
@@ -63,13 +46,12 @@ object HeartRate : SensorEventListener {
                             }
                         }
                         item {
-                            Row() {
+                            Row {
                                 Icon(
                                     painter = painterResource(R.drawable.heart_rate),
                                     contentDescription = "Vital signs icon"
                                 )
-                                Text("BPM: ${currentBPM.floatValue}")
-
+                                Text("Calorias: $calories")
                             }
                         }
                     }
@@ -77,22 +59,3 @@ object HeartRate : SensorEventListener {
             }
         }
     }
-
-    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-    }
-
-    override fun onSensorChanged(event: SensorEvent) {
-        if (event.sensor.type != Sensor.TYPE_HEART_RATE) return
-
-        val bpm = event.values[0]
-        Log.d("health", "bpm: $bpm")
-
-        currentBPM.floatValue = bpm
-    }
-}
-
-@Preview()
-@Composable
-private fun HeartRateScreenPreview() {
-    HeartRate.HeartRateScreen()
-}
