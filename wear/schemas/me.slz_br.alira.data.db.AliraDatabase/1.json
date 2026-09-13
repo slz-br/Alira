@@ -1,0 +1,454 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "58bb58931fa1d5f33e3e8637cf856381",
+    "entities": [
+      {
+        "tableName": "usuario",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id_usuario` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `nome` TEXT NOT NULL, `data_nascimento` INTEGER, `telefone` TEXT, `email` TEXT NOT NULL, `deficiencia` TEXT, `nivel_autonomia` TEXT, `senha` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "idUsuario",
+            "columnName": "id_usuario",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nome",
+            "columnName": "nome",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dataNascimento",
+            "columnName": "data_nascimento",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "telefone",
+            "columnName": "telefone",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "email",
+            "columnName": "email",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "deficiencia",
+            "columnName": "deficiencia",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "nivelAutonomia",
+            "columnName": "nivel_autonomia",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "senha",
+            "columnName": "senha",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id_usuario"
+          ]
+        }
+      },
+      {
+        "tableName": "acessibilidade",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id_acessibilidade` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `nome_acessibilidade` TEXT NOT NULL, `descricao` TEXT, `tipo_acessibilidade` TEXT, `ativo` INTEGER NOT NULL DEFAULT 0, `usuario_id` INTEGER NOT NULL, FOREIGN KEY(`usuario_id`) REFERENCES `usuario`(`id_usuario`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "idAcessibilidade",
+            "columnName": "id_acessibilidade",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nomeAcessibilidade",
+            "columnName": "nome_acessibilidade",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "descricao",
+            "columnName": "descricao",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "tipoAcessibilidade",
+            "columnName": "tipo_acessibilidade",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "ativo",
+            "columnName": "ativo",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "usuarioId",
+            "columnName": "usuario_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id_acessibilidade"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_acessibilidade_usuario_id",
+            "unique": false,
+            "columnNames": [
+              "usuario_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_acessibilidade_usuario_id` ON `${TABLE_NAME}` (`usuario_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "usuario",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "usuario_id"
+            ],
+            "referencedColumns": [
+              "id_usuario"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "monitoramento",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id_monitoramento` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `frequencia_cardiaca` REAL, `saturacao_oxigenio` REAL, `temperatura_corporal` REAL, `data_hora` INTEGER NOT NULL, `usuario_id` INTEGER NOT NULL, FOREIGN KEY(`usuario_id`) REFERENCES `usuario`(`id_usuario`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "idMonitoramento",
+            "columnName": "id_monitoramento",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "frequenciaCardiaca",
+            "columnName": "frequencia_cardiaca",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "saturacaoOxigenio",
+            "columnName": "saturacao_oxigenio",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "temperaturaCorporal",
+            "columnName": "temperatura_corporal",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "dataHora",
+            "columnName": "data_hora",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "usuarioId",
+            "columnName": "usuario_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id_monitoramento"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_monitoramento_usuario_id",
+            "unique": false,
+            "columnNames": [
+              "usuario_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_monitoramento_usuario_id` ON `${TABLE_NAME}` (`usuario_id`)"
+          },
+          {
+            "name": "index_monitoramento_data_hora",
+            "unique": false,
+            "columnNames": [
+              "data_hora"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_monitoramento_data_hora` ON `${TABLE_NAME}` (`data_hora`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "usuario",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "usuario_id"
+            ],
+            "referencedColumns": [
+              "id_usuario"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "alerta",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id_alerta` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `tipo_alerta` TEXT NOT NULL, `descricao` TEXT, `nivel_urgencia` TEXT NOT NULL, `data_hora` INTEGER NOT NULL, `status` TEXT NOT NULL, `monitoramento_id` INTEGER, `cuidador_id` INTEGER, FOREIGN KEY(`monitoramento_id`) REFERENCES `monitoramento`(`id_monitoramento`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`cuidador_id`) REFERENCES `cuidador`(`id_cuidador`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+        "fields": [
+          {
+            "fieldPath": "idAlerta",
+            "columnName": "id_alerta",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tipoAlerta",
+            "columnName": "tipo_alerta",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "descricao",
+            "columnName": "descricao",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "nivelUrgencia",
+            "columnName": "nivel_urgencia",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dataHora",
+            "columnName": "data_hora",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "monitoramentoId",
+            "columnName": "monitoramento_id",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "cuidadorId",
+            "columnName": "cuidador_id",
+            "affinity": "INTEGER"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id_alerta"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_alerta_monitoramento_id",
+            "unique": false,
+            "columnNames": [
+              "monitoramento_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_alerta_monitoramento_id` ON `${TABLE_NAME}` (`monitoramento_id`)"
+          },
+          {
+            "name": "index_alerta_cuidador_id",
+            "unique": false,
+            "columnNames": [
+              "cuidador_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_alerta_cuidador_id` ON `${TABLE_NAME}` (`cuidador_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "monitoramento",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "monitoramento_id"
+            ],
+            "referencedColumns": [
+              "id_monitoramento"
+            ]
+          },
+          {
+            "table": "cuidador",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "cuidador_id"
+            ],
+            "referencedColumns": [
+              "id_cuidador"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "relatorio",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id_relatorio` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `tipo` TEXT NOT NULL, `data_geracao` INTEGER NOT NULL, `caminho_arquivo` TEXT, `usuario_id` INTEGER NOT NULL, FOREIGN KEY(`usuario_id`) REFERENCES `usuario`(`id_usuario`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "idRelatorio",
+            "columnName": "id_relatorio",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tipo",
+            "columnName": "tipo",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dataGeracao",
+            "columnName": "data_geracao",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "caminhoArquivo",
+            "columnName": "caminho_arquivo",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "usuarioId",
+            "columnName": "usuario_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id_relatorio"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_relatorio_usuario_id",
+            "unique": false,
+            "columnNames": [
+              "usuario_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_relatorio_usuario_id` ON `${TABLE_NAME}` (`usuario_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "usuario",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "usuario_id"
+            ],
+            "referencedColumns": [
+              "id_usuario"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "cuidador",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id_cuidador` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `nome` TEXT NOT NULL, `telefone` TEXT NOT NULL, `parentesco` TEXT, `email` TEXT, `usuario_id` INTEGER NOT NULL, FOREIGN KEY(`usuario_id`) REFERENCES `usuario`(`id_usuario`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "idCuidador",
+            "columnName": "id_cuidador",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nome",
+            "columnName": "nome",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "telefone",
+            "columnName": "telefone",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "parentesco",
+            "columnName": "parentesco",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "email",
+            "columnName": "email",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "usuarioId",
+            "columnName": "usuario_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id_cuidador"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_cuidador_usuario_id",
+            "unique": false,
+            "columnNames": [
+              "usuario_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_cuidador_usuario_id` ON `${TABLE_NAME}` (`usuario_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "usuario",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "usuario_id"
+            ],
+            "referencedColumns": [
+              "id_usuario"
+            ]
+          }
+        ]
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '58bb58931fa1d5f33e3e8637cf856381')"
+    ]
+  }
+}

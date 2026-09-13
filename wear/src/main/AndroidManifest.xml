@@ -9,6 +9,10 @@
          enviarNotificacao() para dar o retorno tátil de alerta (RF03). -->
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/>
+    <uses-permission
+        android:name="android.permission.BODY_SENSORS_BACKGROUND"
+        android:maxSdkVersion="35" />
+    <uses-permission android:name="android.permission.health.READ_HEALTH_DATA_IN_BACKGROUND" />
     <uses-feature android:name="android.hardware.type.watch" />
     <uses-feature
         android:name="android.hardware.sensor.hifi_sensors"
@@ -50,6 +54,11 @@
         <!-- Recebe o cadastro sincronizado do celular (data/sync/WearDataLayerListenerService.kt).
              android:exported="true" é obrigatório para o sistema conseguir despachar
              a mensagem da Data Layer API até este Service. -->
+        <service
+            android:name=".data.sync.MonitoramentoBackgroundService"
+            android:permission="com.google.android.wearable.healthservices.permission.PASSIVE_DATA_BINDING"
+            android:exported="true" />
+
         <service
             android:name=".data.sync.WearDataLayerListenerService"
             android:exported="true">
