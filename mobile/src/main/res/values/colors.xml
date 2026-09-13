@@ -2,4 +2,30 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Cores abaixo trazidas do protótipo "telainicial" (mesma paleta
+         usada na tela de login/cadastro), para os drawables copiados em
+         res/drawable/ (bg_gradient_galaxy, bg_glass_card, etc.) terem
+         onde resolver as referências @color/... -->
+    <color name="galaxy_black">#0A0612</color>
+    <color name="galaxy_dark_purple">#170B29</color>
+    <color name="galaxy_purple">#2D1B4E</color>
+
+    <color name="glass_card_fill">#4e1fbd</color>
+    <color name="glass_card_stroke">#40FFFFFF</color>
+
+    <color name="accent_purple">#9B5DE5</color>
+    <color name="accent_purple_light">#B983FF</color>
+    <color name="accent_purple_dark">#7B3FC4</color>
+
+    <color name="text_primary">#FFFFFFFF</color>
+    <color name="text_secondary">#FFFFFFFF</color>
+    <color name="text_hint">#FFFFFFFF</color>
+
+    <color name="field_fill">#1AFFFFFF</color>
+    <color name="field_stroke">#40B983FF</color>
+    <color name="field_stroke_focused">#B983FF</color>
+
+    <color name="a11y_toggle_fill">#33FFFFFF</color>
+    <color name="a11y_toggle_stroke">#66FFFFFF</color>
 </resources>

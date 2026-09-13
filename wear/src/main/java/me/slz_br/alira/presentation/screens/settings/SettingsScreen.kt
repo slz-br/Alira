@@ -1,4 +1,4 @@
-package me.slz_br.alira.presentation.screens
+package me.slz_br.alira.presentation.screens.settings
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -7,7 +7,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.wear.compose.foundation.lazy.TransformingLazyColumn
 import androidx.wear.compose.foundation.lazy.rememberTransformingLazyColumnState
 import androidx.wear.compose.material3.AppScaffold
@@ -20,7 +19,7 @@ import me.slz_br.alira.presentation.theme.AliraTheme
 
 @Composable
 fun SettingsScreen(
-    onAccessibilityClick: () -> Unit
+    onAcessibilityClick: () -> Unit
 ) {
     AliraTheme {
         AppScaffold {
@@ -39,7 +38,8 @@ fun SettingsScreen(
                     item {
                         FilledIconButton(
                             modifier = Modifier.fillMaxWidth(),
-                            onClick = onAccessibilityClick) {
+                            onClick = onAcessibilityClick
+                        ) {
                             Row {
                                 Icon(
                                     painter = painterResource(R.drawable.accessibility_icon),
@@ -52,27 +52,8 @@ fun SettingsScreen(
                             }
                         }
                     }
-                    item {
-                        FilledIconButton(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            onClick = onAccessibilityClick
-                        ) {
-                            Row {
-                                Icon(
-                                    painter = painterResource(R.drawable.privacy_icon),
-                                    contentDescription = "Configurações de privacidade"
-                                )
-                                Text("Privacidade")
-                            }
-                        }
-                    }
                 }
             }
         }
     }
 }
-
-@Preview
-@Composable
-private fun SettingsScreenPreview() = SettingsScreen {}
