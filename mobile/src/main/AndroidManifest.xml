@@ -11,8 +11,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Alira">
+        <!-- Agora é a LoginActivity que abre primeiro (LAUNCHER), não a
+             MainActivity — o app precisa autenticar o Usuario (RF08) antes
+             de mostrar a tela principal. MainActivity continua declarada
+             abaixo, sem intent-filter de LAUNCHER, e é aberta pelo próprio
+             código (ver LoginActivity.handleLogin()). -->
         <activity
-            android:name=".MainActivity"
+            android:name=".presentation.LoginActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
@@ -21,6 +26,28 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".presentation.CadastroActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- Recebe os alertas enviados pelo relógio (data/sync/MobileDataLayerService.kt).
+             android:exported="true" é obrigatório para o sistema conseguir
+             despachar a mensagem da Data Layer API até este Service — mesmo
+             padrão do WearDataLayerListenerService no :wear. -->
+        <service
+            android:name=".data.sync.MobileDataLayerListenerService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

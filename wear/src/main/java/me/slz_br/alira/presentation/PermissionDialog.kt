@@ -73,3 +73,16 @@ object ActivityRecognitionPermissionTextProvider: PermissionTextProvider {
     }
 
 }
+
+object FrequenciaCardiacaPermissionTextProvider : PermissionTextProvider {
+    override fun getDescription(isPermanentlyDeclined: Boolean): String {
+        return if (isPermanentlyDeclined) {
+            "Parece que você negou permanentemente o acesso aos sensores corporais. " +
+            "Habilite-o nas configurações do aplicativo para medir sua frequência cardíaca."
+        }
+        else {
+            "O aplicativo precisa acessar o sensor de frequência cardíaca do relógio para " +
+            "acompanhar seus batimentos."
+        }
+    }
+}

@@ -15,8 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.res.stringResource
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.wear.compose.foundation.lazy.TransformingLazyColumn
@@ -29,22 +28,27 @@ import androidx.wear.compose.material3.Icon
 import androidx.wear.compose.material3.ListHeader
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.ScreenScaffold
+import androidx.wear.compose.material3.SurfaceTransformation
 import androidx.wear.compose.material3.Text
 import androidx.wear.compose.material3.lazy.rememberTransformationSpec
 import androidx.wear.compose.material3.lazy.transformedHeight
 import me.slz_br.alira.R
 import me.slz_br.alira.presentation.ActivityRecognitionPermissionTextProvider
+import me.slz_br.alira.presentation.FrequenciaCardiacaPermissionTextProvider
 import me.slz_br.alira.presentation.PermissionDialog
-import me.slz_br.alira.presentation.viewmodels.HomeScreenViewModel
+import me.slz_br.alira.presentation.permissaoFrequenciaCardiaca
+import me.slz_br.alira.presentation.permissoesSinaisVitais
 import me.slz_br.alira.presentation.theme.AliraTheme
+import me.slz_br.alira.presentation.viewmodels.HomeScreenViewModel
 
 @Composable
 fun WearApp(
     viewModel: HomeScreenViewModel = viewModel(),
-    onVitalsClick: () -> Unit,
-    onGenerateReportClick: () -> Unit,
-    onSettingsClick: () -> Unit,
-    onInfoScreenClick: () -> Unit
+    onHeartRateClick: () -> Unit = {},
+    onVitalsClick: () -> Unit = {},
+    onGenerateReportClick: () -> Unit = {},
+    onSettingsClick: () -> Unit = {},
+    onInfoScreenClick: () -> Unit = {}
 ) {
     AliraTheme {
         AppScaffold {
@@ -52,13 +56,18 @@ fun WearApp(
             val activity = LocalActivity.current!!
             val dialogueQueue = viewModel.visiblePermissionDialogQueue
 
-            val activityRecognitionResultLauncher = rememberLauncherForActivityResult(
-                contract = ActivityResultContracts.RequestPermission(),
-                onResult = { isGranted ->
-                    viewModel.onPermissionResult(
-                        permission = ACTIVITY_RECOGNITION,
-                        isGranted = isGranted
-                    )
+            val permissoesResultLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.RequestMultiplePermissions(),
+                onResult = { resultados ->
+                    resultados.forEach { (permissao, concedida) ->
+                        viewModel.onPermissionResult(
+                            permission = permissao,
+                            isGranted = concedida
+                        )
+                    }
+                    if (resultados.values.any { it }) {
+                        onVitalsClick()
+                    }
                 }
             )
 
@@ -86,30 +95,49 @@ fun WearApp(
                                 Modifier
                                     .fillMaxWidth()
                                     .transformedHeight(this, transformationSpec),
+                            transformation = SurfaceTransformation(transformationSpec),
                         ) {
-                            Text(fontWeight = FontWeight(800), text = "Alira")
+                            Text(text = stringResource(R.string.hello_world, "Usuário!"))
+                        }
+                    }
+                    item {
+                        FilledIconButton(
+                            onClick = onHeartRateClick,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .transformedHeight(this, transformationSpec)
+                        ) {
+                            Row {
+                                Icon(
+                                    painter = painterResource(R.drawable.heart_icon),
+                                    contentDescription = "Botão de frequência cardiaca"
+                                )
+                                Text(
+                                    text = "Freq. Cardiaca"
+                                )
+                            }
                         }
                     }
                     item {
                         FilledIconButton(
                             onClick = {
-                                if (ActivityCompat.checkSelfPermission(context, ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED) {
+                                val faltando = permissoesSinaisVitais.filter { permissao ->
+                                    ActivityCompat.checkSelfPermission(context, permissao) !=
+                                        PackageManager.PERMISSION_GRANTED
+                                }
+                                if (faltando.isEmpty()) {
                                     onVitalsClick()
+                                } else {
+                                    permissoesResultLauncher.launch(faltando.toTypedArray())
                                 }
-                                else {
-                                    activityRecognitionResultLauncher.launch(
-                                        input = ACTIVITY_RECOGNITION
-                                    )
-                                }
-
-                                activity.recreate()
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
+                                .transformedHeight(this, transformationSpec)
                         ) {
                             Row {
                                 Icon(
-                                    painter = painterResource(R.drawable.heart_icon),
+                                    painter = painterResource(R.drawable.heart_rate),
                                     contentDescription = "Botão de sinais vitais"
                                 )
                                 Text(
@@ -123,6 +151,7 @@ fun WearApp(
                             onClick = onGenerateReportClick,
                             modifier = Modifier
                                 .fillMaxWidth()
+                                .transformedHeight(this, transformationSpec),
                         ) {
                             Row {
                                 Icon(
@@ -155,13 +184,14 @@ fun WearApp(
                         PermissionDialog(
                             permissionTextProvider = when (permission) {
                                 ACTIVITY_RECOGNITION -> ActivityRecognitionPermissionTextProvider
+                                permissaoFrequenciaCardiaca -> FrequenciaCardiacaPermissionTextProvider
                                 else -> return@forEach
                             },
                             isPermanentlyDeclined = !activity.shouldShowRequestPermissionRationale(permission),
                             onDismiss = viewModel::dismissDialog,
                             onOkClick = {
                                 viewModel.dismissDialog()
-                                activityRecognitionResultLauncher.launch(permission)
+                                permissoesResultLauncher.launch(arrayOf(permission))
                             },
                             onGoToAppSettings = activity::openAppSettings
                         )
@@ -176,15 +206,4 @@ fun Activity.openAppSettings() {
         Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
         Uri.fromParts("package", packageName, null)
     ).also(::startActivity)
-}
-
-@Preview
-@Composable
-private fun HomeScreenPreview() {
-    WearApp(
-        onVitalsClick = {},
-        onGenerateReportClick = {},
-        onSettingsClick = {},
-        onInfoScreenClick = {}
-    )
 }
