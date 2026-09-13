@@ -156,6 +156,39 @@ class AliraRepository(private val context: Context) {
         avaliarFrequenciaAnormal(idMonitoramento, frequenciaCardiaca)
     }
 
+    suspend fun coletarCalorias(usuarioId: Long, calorias: Float, dataHora: Long = System.currentTimeMillis()) {
+        if (calorias <= 0f) return
+        val idMonitoramento = monitoramentoDao.inserir(
+            MonitoramentoEntity(
+                frequenciaCardiaca = calorias.toDouble(),
+                dataHora = dataHora,
+                usuarioId = usuarioId,
+            )
+        )
+    }
+
+    suspend fun coletarPassos(usuarioId: Long, passos: Long, dataHora: Long = System.currentTimeMillis()) {
+        if (passos <= 0f) return
+        val idMonitoramento = monitoramentoDao.inserir(
+            MonitoramentoEntity(
+                frequenciaCardiaca = passos.toDouble(),
+                dataHora = dataHora,
+                usuarioId = usuarioId,
+            )
+        )
+    }
+
+    suspend fun coletarDistancia(usuarioId: Long, distancia: Float, dataHora: Long = System.currentTimeMillis()) {
+        if (distancia <= 0f) return
+        val idMonitoramento = monitoramentoDao.inserir(
+            MonitoramentoEntity(
+                frequenciaCardiaca = distancia.toDouble(),
+                dataHora = dataHora,
+                usuarioId = usuarioId,
+            )
+        )
+    }
+
     /**
      * Smartwatch.detectarQueda() — TODO: não implementado. O projeto ainda
      * não lê o acelerômetro (só TYPE_HEART_RATE, em HearRateScreen.kt).

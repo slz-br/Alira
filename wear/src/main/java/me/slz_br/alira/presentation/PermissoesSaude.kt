@@ -20,3 +20,15 @@ val permissoesSinaisVitais: List<String>
         Manifest.permission.ACTIVITY_RECOGNITION,
         permissaoFrequenciaCardiaca,
     )
+
+const val PERMISSAO_LER_EM_SEGUNDO_PLANO = "android.permission.health.READ_HEALTH_DATA_IN_BACKGROUND"
+
+@Suppress("DEPRECATION")
+const val PERMISSAO_SENSORES_EM_SEGUNDO_PLANO = "android.permission.BODY_SENSORS_BACKGROUND"
+
+val permissaoSegundoPlano: String
+    get() = if (Build.VERSION.SDK_INT >= API_WEAR_OS_6) {
+        PERMISSAO_LER_EM_SEGUNDO_PLANO
+    } else {
+        PERMISSAO_SENSORES_EM_SEGUNDO_PLANO
+    }

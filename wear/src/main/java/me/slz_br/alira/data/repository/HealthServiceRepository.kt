@@ -12,6 +12,7 @@ import androidx.health.services.client.data.DataType
 import androidx.health.services.client.data.DataTypeAvailability
 import androidx.health.services.client.data.DeltaDataType
 import androidx.health.services.client.data.PassiveListenerConfig
+import me.slz_br.alira.data.sync.MonitoramentoBackgroundService
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -105,6 +106,23 @@ class HealthServiceRepository(context: Context) {
             runCatching { measureClient.unregisterMeasureCallbackAsync(tipo, callback) }
                 .onFailure { Log.w(TAG, "Falha ao desregistrar a medição", it) }
         }
+    }
+
+    fun ligarMonitoramentoEmSegundoPlano() {
+        val config = PassiveListenerConfig.builder()
+            .setDataTypes(setOf<DataType<*, *>>(DataType.HEART_RATE_BPM))
+            .build()
+        runCatching {
+            passiveMonitoringClient
+                .setPassiveListenerServiceAsync(MonitoramentoBackgroundService::class.java, config)
+        }
+            .onSuccess { Log.d(TAG, "Monitoramento em segundo plano solicitado") }
+            .onFailure { Log.w(TAG, "Não foi possível ligar o monitoramento em segundo plano", it) }
+    }
+
+    fun desligarMonitoramentoEmSegundoPlano() {
+        runCatching { passiveMonitoringClient.clearPassiveListenerServiceAsync() }
+            .onFailure { Log.w(TAG, "Falha ao desligar o monitoramento em segundo plano", it) }
     }
 
     fun fluxoMetricasDiarias(): Flow<LeituraDiaria> = callbackFlow {
