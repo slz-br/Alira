@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawer_menu"
+    android:layout_width="260dp"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    android:clickable="true"
+    android:focusable="true"
+    android:orientation="vertical"
+    android:paddingTop="24dp"
+    android:paddingBottom="12dp">
+
+    <ImageView
+        android:id="@+id/menu_avatar"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="32dp"
+        android:background="@drawable/bg_avatar"
+        android:clipToOutline="true"
+        android:contentDescription="Foto do perfil"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_person" />
+
+    <TextView
+        android:id="@+id/menu_perfil"
+        style="@style/DrawerItem"
+        android:text="Perfil" />
+    <View style="@style/DrawerDivider" />
+
+    <TextView
+        android:id="@+id/menu_inicio"
+        style="@style/DrawerItem"
+        android:text="Tela inicial" />
+    <View style="@style/DrawerDivider" />
+
+    <TextView
+        android:id="@+id/menu_relatorios"
+        style="@style/DrawerItem"
+        android:text="Relatórios" />
+    <View style="@style/DrawerDivider" />
+
+    <TextView
+        android:id="@+id/menu_acessibilidade"
+        style="@style/DrawerItem"
+        android:text="Acessibilidade" />
+    <View style="@style/DrawerDivider" />
+
+    <TextView
+        android:id="@+id/menu_institucional"
+        style="@style/DrawerItem"
+        android:text="Institucional" />
+    <View style="@style/DrawerDivider" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="Desenvolvido por Alira Company"
+        android:textColor="#FFFFFF"
+        android:textSize="9sp" />
+
+</LinearLayout>

@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
 
     // KSP: só UMA linha é necessária aqui. O erro anterior veio de declarar
     // o plugin duas vezes (uma com "apply false" e outra sem) no mesmo
@@ -47,6 +48,8 @@ android {
 
 dependencies {
 
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
     // Room: banco de dados local (SQLite) do ALIRA.
     // - room-runtime/room-ktx rodam DENTRO do app (por isso "implementation").
     // - room-ktx especificamente é o que dá suporte a Flow<...> nas queries

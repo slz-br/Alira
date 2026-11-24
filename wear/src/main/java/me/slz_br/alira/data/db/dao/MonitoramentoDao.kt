@@ -30,6 +30,14 @@ interface MonitoramentoDao {
     )
     suspend fun obterEntrePeriodo(usuarioId: Long, inicio: Long, fim: Long): List<MonitoramentoEntity>
 
+    // Próximo "lote" de leituras ainda não enviadas ao celular: as que têm
+    // número (id) maior que o último enviado, em ordem, no máximo :limite.
+    @Query(
+        "SELECT * FROM monitoramento WHERE usuario_id = :usuarioId " +
+            "AND id_monitoramento > :ultimoId ORDER BY id_monitoramento LIMIT :limite"
+    )
+    suspend fun obterDepoisDe(usuarioId: Long, ultimoId: Long, limite: Int): List<MonitoramentoEntity>
+
     @Query(
         "SELECT AVG(frequencia_cardiaca) FROM monitoramento " +
             "WHERE usuario_id = :usuarioId AND data_hora BETWEEN :inicio AND :fim"

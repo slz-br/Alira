@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+    <uses-permission android:name="android.permission.CAMERA" />
 
+    <!-- SMS para o cuidador quando o relógio detecta uma queda/crise e a
+         pessoa não responde (ver data/sync/MobileDataLayerService.kt).
+         O pedido na tela é feito em MainActivity. -->
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <!-- required=false: o app instala também em aparelhos sem chip (o envio só falha). -->
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false" />
+    <uses-feature android:name="android.hardware.camera.any" android:required="false" />
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -10,44 +20,50 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Alira">
-        <!-- Agora é a LoginActivity que abre primeiro (LAUNCHER), não a
-             MainActivity — o app precisa autenticar o Usuario (RF08) antes
-             de mostrar a tela principal. MainActivity continua declarada
-             abaixo, sem intent-filter de LAUNCHER, e é aberta pelo próprio
-             código (ver LoginActivity.handleLogin()). -->
+        android:theme="@style/Theme.Telainicial">
         <activity
-            android:name=".presentation.LoginActivity"
-            android:exported="true"
-            android:windowSoftInputMode="adjustResize">
+            android:name=".MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
         <activity
-            android:name=".presentation.CadastroActivity"
+            android:name=".AcessibilidadeActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".BatimentosActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".PerfilActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
 
         <activity
-            android:name=".MainActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize" />
+            android:name=".LeitorImagemActivity"
+            android:exported="false" />
 
-        <!-- Recebe os alertas enviados pelo relógio (data/sync/MobileDataLayerService.kt).
-             android:exported="true" é obrigatório para o sistema conseguir
-             despachar a mensagem da Data Layer API até este Service — mesmo
-             padrão do WearDataLayerListenerService no :wear. -->
+        <!-- Recebe as mensagens do relógio (data/sync/MobileDataLayerService.kt),
+             mesmo com o app fechado. exported="true" é obrigatório para o
+             sistema conseguir entregar a mensagem a este Service. -->
         <service
             android:name=".data.sync.MobileDataLayerListenerService"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
+                <!-- "/alira" cobre todos os caminhos do app
+                     (/alira/alerta, /alira/emergencia, /alira/leituras). -->
+                <data
+                    android:host="*"
+                    android:pathPrefix="/alira"
+                    android:scheme="wear" />
             </intent-filter>
         </service>
+
     </application>
 
 </manifest>

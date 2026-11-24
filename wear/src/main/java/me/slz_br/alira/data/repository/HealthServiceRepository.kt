@@ -1,7 +1,10 @@
 package me.slz_br.alira.data.repository
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.util.Log
+import androidx.core.content.ContextCompat
 import androidx.health.services.client.HealthServices
 import androidx.health.services.client.MeasureCallback
 import androidx.health.services.client.PassiveListenerCallback
@@ -39,7 +42,8 @@ sealed interface LeituraDiaria {
 
 class HealthServiceRepository(context: Context) {
 
-    private val healthServiceClient = HealthServices.getClient(context.applicationContext)
+    private val appContext = context.applicationContext
+    private val healthServiceClient = HealthServices.getClient(appContext)
     private val measureClient = healthServiceClient.measureClient
     private val passiveMonitoringClient = healthServiceClient.passiveMonitoringClient
 
@@ -109,8 +113,19 @@ class HealthServiceRepository(context: Context) {
     }
 
     fun ligarMonitoramentoEmSegundoPlano() {
+        // Batimentos sempre; atividade do dia (calorias, passos, distância)
+        // só se a permissão de atividade física foi dada — pedir um dado
+        // sem a permissão faz o Health Services recusar o pedido inteiro.
+        val tipos = mutableSetOf<DataType<*, *>>(DataType.HEART_RATE_BPM)
+        val temPermissaoDeAtividade = ContextCompat.checkSelfPermission(
+            appContext,
+            Manifest.permission.ACTIVITY_RECOGNITION,
+        ) == PackageManager.PERMISSION_GRANTED
+        if (temPermissaoDeAtividade) {
+            tipos += setOf(DataType.CALORIES_DAILY, DataType.STEPS_DAILY, DataType.DISTANCE_DAILY)
+        }
         val config = PassiveListenerConfig.builder()
-            .setDataTypes(setOf<DataType<*, *>>(DataType.HEART_RATE_BPM))
+            .setDataTypes(tipos)
             .build()
         runCatching {
             passiveMonitoringClient

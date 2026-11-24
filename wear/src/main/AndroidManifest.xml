@@ -5,6 +5,11 @@
     <uses-permission android:name="android.permission.BODY_SENSORS" />
     <uses-permission android:name="android.permission.health.READ_HEART_RATE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_HEALTH"/>
+    <!-- Monitoramento contínuo (monitoramento/MonitoramentoContinuoService.kt):
+         serviço em primeiro plano com notificação fixa, e religar sozinho
+         quando o relógio é ligado de novo. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <!-- Necessária para AliraRepository.vibrar(), chamada em gerarAlerta()/
          enviarNotificacao() para dar o retorno tátil de alerta (RF03). -->
     <uses-permission android:name="android.permission.VIBRATE" />
@@ -13,6 +18,21 @@
         android:name="android.permission.BODY_SENSORS_BACKGROUND"
         android:maxSdkVersion="35" />
     <uses-permission android:name="android.permission.health.READ_HEALTH_DATA_IN_BACKGROUND" />
+
+    <!-- Emergência (queda / crise de ansiedade): a pergunta "Você está bem?"
+         chega por uma notificação que acende a tela, mesmo com o app
+         fechado (ver emergencia/NotificacaoDeEmergencia.kt). -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <!-- Leitura em voz alta (TextToSpeech) para quem tem deficiência visual:
+         a partir do Android 11, o app só "enxerga" o motor de voz do
+         aparelho se declarar isto aqui. -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
+    </queries>
+
     <uses-feature android:name="android.hardware.type.watch" />
     <uses-feature
         android:name="android.hardware.sensor.hifi_sensors"
@@ -51,6 +71,19 @@
             </intent-filter>
         </activity>
 
+        <!-- Tela "Você está bem?" da emergência (presentation/AlertaEmergenciaActivity.kt).
+             exported="false": só o próprio app abre esta tela. showWhenLocked e
+             turnScreenOn fazem ela aparecer mesmo com o relógio bloqueado. -->
+        <activity
+            android:name=".presentation.AlertaEmergenciaActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:showWhenLocked="true"
+            android:taskAffinity=""
+            android:theme="@android:style/Theme.DeviceDefault"
+            android:turnScreenOn="true" />
+
         <!-- Recebe o cadastro sincronizado do celular (data/sync/WearDataLayerListenerService.kt).
              android:exported="true" é obrigatório para o sistema conseguir despachar
              a mensagem da Data Layer API até este Service. -->
@@ -59,11 +92,36 @@
             android:permission="com.google.android.wearable.healthservices.permission.PASSIVE_DATA_BINDING"
             android:exported="true" />
 
+        <!-- Vigia contínuo: acelerômetro (queda / pessoa parada) + batimentos.
+             foregroundServiceType="health" é o tipo que o Android exige para
+             um serviço que lê sensores do corpo o tempo todo. -->
+        <service
+            android:name=".monitoramento.MonitoramentoContinuoService"
+            android:exported="false"
+            android:foregroundServiceType="health" />
+
+        <!-- Religa o monitoramento contínuo depois que o relógio reinicia. -->
+        <receiver
+            android:name=".monitoramento.ReligarMonitoramentoReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
         <service
             android:name=".data.sync.WearDataLayerListenerService"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
+                <!-- Sem um <data>, o Android filtra TODAS as mensagens e este
+                     Service nunca é chamado. "/alira" cobre todos os caminhos
+                     do app (/alira/usuario_cadastrado, /alira/alerta,
+                     /alira/emergencia, /alira/emergencia_resultado). -->
+                <data
+                    android:host="*"
+                    android:pathPrefix="/alira"
+                    android:scheme="wear" />
             </intent-filter>
         </service>
     </application>

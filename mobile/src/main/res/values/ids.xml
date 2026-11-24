@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- guardam os valores originais do XML para a escala poder ser reaplicada sem acumular -->
+    <item name="a11y_tag_tam_base" type="id" />
+    <item name="a11y_tag_estilo_base" type="id" />
+    <item name="a11y_tag_altura_base" type="id" />
+</resources>

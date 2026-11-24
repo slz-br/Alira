@@ -13,6 +13,11 @@ class HomeScreenViewModel : ViewModel() {
         }
     }
 
+    /**
+     * Ao negar uma permissão necessária para utilizar uma feature do sistema, essa permissão é
+     * adicionada na fila 'visiblePermissionQueue' para ser contextualizada e
+     * requisitada novamente posteriormente (caso necessário).
+     */
     fun onPermissionResult(
         permission: String,
         isGranted: Boolean,

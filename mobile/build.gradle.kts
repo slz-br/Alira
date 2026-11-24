@@ -1,24 +1,25 @@
 plugins {
     alias(libs.plugins.android.application)
 
-    // KSP: mesma peça usada em wear/build.gradle.kts — gera a implementação
-    // de cada @Dao em tempo de compilação. Precisa de UMA linha com versão
-    // aqui, já que este módulo não usa "apply false" em nenhum lugar.
+    // KSP: gera o código do banco (Room) em tempo de compilação, igual ao :wear.
     id("com.google.devtools.ksp") version "2.3.11"
 }
 
 android {
-    namespace = "me.slz_br.alira"
+    // namespace = pacote do código e da classe R. Continua o do app do grupo
+    // (com.example.telainicial), para não precisar mexer em todas as telas.
+    namespace = "com.example.telainicial"
     compileSdk {
-        version = release(37) {
-            minorApiLevel = 0
-        }
+        version = release(37)
     }
 
     defaultConfig {
+        // applicationId = "nome" do app instalado. TEM que ser igual ao do
+        // relógio (wear/build.gradle.kts): é assim que o Android sabe que os
+        // dois apps são do mesmo sistema e deixa um mandar mensagem ao outro.
         applicationId = "me.slz_br.alira"
-        minSdk = 30
-        targetSdk = 37
+        minSdk = 24
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -27,9 +28,11 @@ android {
 
     buildTypes {
         release {
-            optimization {
-                enable = false
-            }
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
     compileOptions {
@@ -39,40 +42,44 @@ android {
 }
 
 dependencies {
-    // Room: mesmo banco local (SQLite) do relógio, agora no celular. É uma
-    // instalação separada porque :mobile e :wear viram dois .apk distintos
-    // (ver comentário em AliraDatabase.kt deste módulo).
-    val room_version = "2.8.4"
-    implementation("androidx.room:room-runtime:$room_version")
-    implementation("androidx.room:room-ktx:$room_version")
-    ksp("androidx.room:room-compiler:$room_version")
-
-    // lifecycle-runtime-ktx: dá acesso a "lifecycleScope" em qualquer
-    // AppCompatActivity — o equivalente, numa Activity tradicional, do
-    // rememberCoroutineScope() usado nas telas Compose do :wear.
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.9.0")
-
     implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.core.ktx)
     implementation(libs.material)
-    implementation(libs.play.services.wearable)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
+    implementation(libs.charts)
+    implementation(libs.mpandroidchart)
+    // CameraX 1.4.2 (antes 1.3.4): a partir da 1.4 a parte nativa da câmera
+    // é compatível com celulares de páginas de memória de 16 KB (Android 15+).
+    implementation("androidx.camera:camera-core:1.4.2")
+    implementation("androidx.camera:camera-camera2:1.4.2")
+    implementation("androidx.camera:camera-lifecycle:1.4.2")
+    implementation("androidx.camera:camera-view:1.4.2")
+    implementation("com.google.mlkit:text-recognition:16.0.1")
+    // graphics-path vem "de carona" com outras bibliotecas do Android; aqui ela
+    // é puxada para a versão mais nova (1.1.0), também por causa dos 16 KB.
+    implementation("androidx.graphics:graphics-path:1.1.0")
 
-    // room-testing: dá suporte extra pra testar Room (ex.: MigrationTestHelper,
-    // se um dia a Tabela usuario/cuidador/relatorio mudar de formato e
-    // precisar de migração). Room.inMemoryDatabaseBuilder() usado nos testes
-    // de mobile/src/androidTest/ já vem do room-runtime (dependência "implementation"
-    // acima), então essa aqui não é estritamente obrigatória hoje — é
-    // adicionada agora pra não faltar quando o capítulo de migração existir.
+    // ---- Integração com o relógio ----
+    // Room: banco local (SQLite) do celular: usuário, cuidador e as
+    // leituras que chegam do relógio.
+    val room_version = "2.8.4"
+    implementation("androidx.room:room-runtime:$room_version")
+    implementation("androidx.room:room-ktx:$room_version")
+    ksp("androidx.room:room-compiler:$room_version")
     androidTestImplementation("androidx.room:room-testing:$room_version")
+
+    // lifecycleScope: rodar tarefas do banco a partir das telas.
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.9.0")
+
+    // Wearable Data Layer: o canal de mensagens entre celular e relógio.
+    implementation(libs.play.services.wearable)
 }
 
-// Mesmo raciocínio do :wear: exporta o schema a cada build (útil pra
-// escrever migrações no futuro, se uma tabela mudar de formato).
+// Exporta o formato do banco a cada build (ajuda a escrever migrações).
 ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
 }

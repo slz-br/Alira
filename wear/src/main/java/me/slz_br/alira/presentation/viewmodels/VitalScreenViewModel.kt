@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 import me.slz_br.alira.data.repository.HealthServiceRepository
 import me.slz_br.alira.data.repository.LeituraCardiaca
 import me.slz_br.alira.data.repository.LeituraDiaria
+import me.slz_br.alira.monitoramento.MonitorCardiaco
 
 enum class StatusMetrica {
     AGUARDANDO,
@@ -30,6 +31,8 @@ data class EstadoSinaisVitais(
     val distanciaMetros: Double? = null,
     val statusDiarias: StatusMetrica = StatusMetrica.AGUARDANDO,
     val detalhe: String? = null,
+    // Últimos batimentos recebidos (até 40), para o gráfico da tela.
+    val historicoBpm: List<Float> = emptyList(),
 )
 
 class VitalScreenViewModel(application: Application) : AndroidViewModel(application) {
@@ -48,8 +51,16 @@ class VitalScreenViewModel(application: Application) : AndroidViewModel(applicat
         viewModelScope.launch {
             repositorio.fluxoFrequenciaCardiaca().collect { leitura ->
                 estado = when (leitura) {
-                    is LeituraCardiaca.Bpm ->
-                        estado.copy(bpm = leitura.valor, statusBpm = StatusMetrica.OK)
+                    is LeituraCardiaca.Bpm -> {
+                        // Também passa pelo MonitorCardiaco: grava no banco e
+                        // vigia batimento fora do normal enquanto a tela está aberta.
+                        MonitorCardiaco.novaLeitura(getApplication<Application>(), leitura.valor.toFloat())
+                        estado.copy(
+                            bpm = leitura.valor,
+                            statusBpm = StatusMetrica.OK,
+                            historicoBpm = (estado.historicoBpm + leitura.valor.toFloat()).takeLast(40),
+                        )
+                    }
 
                     is LeituraCardiaca.Disponibilidade -> estado.copy(
                         statusBpm = when (leitura.estado) {

@@ -23,6 +23,11 @@ interface CuidadorDao {
     @Query("SELECT * FROM cuidador WHERE usuario_id = :usuarioId ORDER BY nome")
     fun observarCuidadores(usuarioId: Long): Flow<List<CuidadorEntity>>
 
+    // Versão "foto de agora" (sem Flow): usada quando chega o cuidador do
+    // celular, para saber se já existe um para atualizar.
+    @Query("SELECT * FROM cuidador WHERE usuario_id = :usuarioId ORDER BY id_cuidador")
+    suspend fun obterCuidadores(usuarioId: Long): List<CuidadorEntity>
+
     @Query("SELECT * FROM cuidador WHERE id_cuidador = :idCuidador")
     suspend fun obterPorId(idCuidador: Long): CuidadorEntity?
 }

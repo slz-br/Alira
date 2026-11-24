@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import me.slz_br.alira.data.db.dao.AcessibilidadeDao
 import me.slz_br.alira.data.db.dao.AlertaDao
 import me.slz_br.alira.data.db.dao.CuidadorDao
@@ -38,7 +40,7 @@ import me.slz_br.alira.data.db.entities.UsuarioEntity
         RelatorioEntity::class,
         CuidadorEntity::class,
     ],
-    version = 1,
+    version = 2,
     exportSchema = true,
 )
 abstract class AliraDatabase : RoomDatabase() {
@@ -51,6 +53,20 @@ abstract class AliraDatabase : RoomDatabase() {
     abstract fun cuidadorDao(): CuidadorDao
 
     companion object {
+        /**
+         * Migração da versão 1 para a 2: só ACRESCENTA as 3 colunas novas
+         * na tabela monitoramento. Os dados que já estavam salvos continuam
+         * lá (sem migração, o Room apagaria o banco ou travaria o app ao
+         * abrir num relógio que já tinha a versão 1 instalada).
+         */
+        val MIGRACAO_1_PARA_2 = object : Migration(1, 2) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE monitoramento ADD COLUMN calorias REAL")
+                db.execSQL("ALTER TABLE monitoramento ADD COLUMN passos INTEGER")
+                db.execSQL("ALTER TABLE monitoramento ADD COLUMN distancia REAL")
+            }
+        }
+
         @Volatile
         private var instancia: AliraDatabase? = null
 
@@ -60,7 +76,10 @@ abstract class AliraDatabase : RoomDatabase() {
                     context.applicationContext,
                     AliraDatabase::class.java,
                     "alira.db",
-                ).build().also { instancia = it }
+                )
+                    .addMigrations(MIGRACAO_1_PARA_2)
+                    .build()
+                    .also { instancia = it }
             }
     }
 }

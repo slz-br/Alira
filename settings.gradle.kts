@@ -19,6 +19,8 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        // JitPack: de onde vem a biblioteca de gráficos do celular (MPAndroidChart).
+        maven { url = uri("https://jitpack.io") }
     }
 }
 

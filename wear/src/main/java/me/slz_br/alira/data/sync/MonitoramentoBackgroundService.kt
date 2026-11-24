@@ -1,5 +1,6 @@
 package me.slz_br.alira.data.sync
 
+import android.os.SystemClock
 import android.util.Log
 import androidx.health.services.client.PassiveListenerService
 import androidx.health.services.client.data.DataPointContainer
@@ -9,7 +10,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import java.time.Instant
 import me.slz_br.alira.data.repository.AliraRepository
+import me.slz_br.alira.monitoramento.MonitorCardiaco
 
 private const val TAG = "ALIRA_SAUDE"
 
@@ -31,80 +34,50 @@ class MonitoramentoBackgroundService : PassiveListenerService() {
         val leituraCardiaca = dataPoints.getData(
             DataType.HEART_RATE_BPM
         )
-
-        val leituraCalorias = dataPoints.getData(
-            DataType.CALORIES
-        )
-
-        val leituraPassos = dataPoints.getData(
-            DataType.STEPS
-        )
-
-        val leituraDistancia = dataPoints.getData(
-            DataType.DISTANCE
-        )
         // obtém os dados de freq. cardíaca
 
-        if (
-            leituraCardiaca.isEmpty() &&
-            leituraCalorias.isEmpty() &&
-            leituraPassos.isEmpty() &&
-            leituraDistancia.isEmpty()
-        ) {
+        // Atividade do dia (totais desde a meia-noite). Antes este serviço
+        // pedia DataType.CALORIES/STEPS/DISTANCE, que não estavam na
+        // configuração do Health Services — então nunca chegavam.
+        val calorias = dataPoints.getData(DataType.CALORIES_DAILY).lastOrNull()?.value
+        val passos = dataPoints.getData(DataType.STEPS_DAILY).lastOrNull()?.value
+        val distancia = dataPoints.getData(DataType.DISTANCE_DAILY).lastOrNull()?.value
+
+        if (leituraCardiaca.isEmpty() && calorias == null && passos == null && distancia == null) {
             return
         }
 
-        escopo.launch {
-
-            val repository = AliraRepository.getInstance(
-                applicationContext
+        // Cada leitura de batimento vem com o horário em que foi medida,
+        // contado a partir de quando o relógio ligou. "momentoQueLigou"
+        // converte isso para data e hora de verdade.
+        val momentoQueLigou = Instant.ofEpochMilli(System.currentTimeMillis() - SystemClock.elapsedRealtime())
+        leituraCardiaca.forEach { leitura ->
+            MonitorCardiaco.novaLeitura(
+                context = applicationContext,
+                bpm = leitura.value.toFloat(),
+                dataHora = leitura.getTimeInstant(momentoQueLigou).toEpochMilli(),
             )
-
-            // Obs: não entendi direito as partes acima
-
-
-            val usuarioId = repository.garantirUsuarioLocal()
-
-            leituraCardiaca.forEach { leitura ->
-                repository.coletarBiometria(
-                    usuarioId = usuarioId,
-                    frequenciaCardiaca = leitura.value.toFloat()
-                )
-            }
-            // salva a medição de freq. cardíaca no repo
-            // o valor recebido é convertido para float antes de ir ao repo
-
-            leituraCalorias.forEach { leitura ->
-                repository.coletarCalorias(
-                    usuarioId = usuarioId,
-                    calorias = leitura.value.toFloat()
-                )
-            }
-
-            leituraPassos.forEach { leitura ->
-                repository.coletarPassos(
-                    usuarioId = usuarioId,
-                    passos = leitura.value.toLong()
-                )
-            }
-
-            leituraDistancia.forEach { leitura ->
-                repository.coletarDistancia(
-                    usuarioId = usuarioId,
-                    distancia = leitura.value.toFloat()
-                )
-            }
-
-            Log.d(
-                TAG,
-                "Dados recebidos: " +
-                        "${leituraCardiaca.size} cardíacos, " +
-                        "${leituraCalorias.size} calorias, " +
-                        "${leituraPassos.size} passos, " +
-                        "${leituraDistancia.size} distâncias"
-            )
-            // registra quantas leituras foram armazenadas
         }
+        // O MonitorCardiaco decide se grava (no máximo 1 a cada 10 s) e se
+        // o batimento está fora do normal (abre a pergunta "Você está bem?").
+
+        if (calorias != null || passos != null || distancia != null) {
+            escopo.launch {
+                val repository = AliraRepository.getInstance(applicationContext)
+                repository.coletarAtividadeDiaria(
+                    usuarioId = repository.garantirUsuarioLocal(),
+                    calorias = calorias,
+                    passos = passos,
+                    distanciaMetros = distancia,
+                )
+            }
+        }
+
+        Log.d(
+            TAG,
+            "Dados recebidos: ${leituraCardiaca.size} cardíacos, " +
+                "calorias=$calorias, passos=$passos, distância=$distancia"
+        )
     }
 
     override fun onPermissionLost() {

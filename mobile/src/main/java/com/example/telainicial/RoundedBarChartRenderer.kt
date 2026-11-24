@@ -1,0 +1,60 @@
+package com.example.telainicial
+
+import android.graphics.Canvas
+import android.graphics.Path
+import android.graphics.RectF
+import com.github.mikephil.charting.animation.ChartAnimator
+import com.github.mikephil.charting.interfaces.dataprovider.BarDataProvider
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
+import com.github.mikephil.charting.renderer.BarChartRenderer
+import com.github.mikephil.charting.utils.ViewPortHandler
+import kotlin.math.min
+
+/** Desenha as barras com os cantos de cima arredondados (como na imagem). */
+class RoundedBarChartRenderer(
+    chart: BarDataProvider,
+    animator: ChartAnimator,
+    viewPortHandler: ViewPortHandler,
+    private val radius: Float
+) : BarChartRenderer(chart, animator, viewPortHandler) {
+
+    private val rect = RectF()
+    private val path = Path()
+
+    override fun drawDataSet(c: Canvas, dataSet: IBarDataSet, index: Int) {
+        val trans = mChart.getTransformer(dataSet.axisDependency)
+
+        val buffer = mBarBuffers[index]
+        buffer.setPhases(mAnimator.phaseX, mAnimator.phaseY)
+        buffer.setDataSet(index)
+        buffer.setInverted(mChart.isInverted(dataSet.axisDependency))
+        buffer.setBarWidth(mChart.barData.barWidth)
+        buffer.feed(dataSet)
+        trans.pointValuesToPixel(buffer.buffer)
+
+        var j = 0
+        while (j < buffer.size()) {
+            if (!mViewPortHandler.isInBoundsLeft(buffer.buffer[j + 2])) {
+                j += 4
+                continue
+            }
+            if (!mViewPortHandler.isInBoundsRight(buffer.buffer[j])) break
+
+            mRenderPaint.color = dataSet.getColor(j / 4)
+
+            rect.set(
+                buffer.buffer[j], buffer.buffer[j + 1],
+                buffer.buffer[j + 2], buffer.buffer[j + 3]
+            )
+            val r = min(radius, rect.width() / 2f)
+            path.reset()
+            path.addRoundRect(
+                rect,
+                floatArrayOf(r, r, r, r, 0f, 0f, 0f, 0f),
+                Path.Direction.CW
+            )
+            c.drawPath(path, mRenderPaint)
+            j += 4
+        }
+    }
+}

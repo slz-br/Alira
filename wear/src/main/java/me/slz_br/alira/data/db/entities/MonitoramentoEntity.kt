@@ -15,10 +15,13 @@ import androidx.room.PrimaryKey
  * Único ajuste: no diagrama os 3 campos de biometria são "double" sem
  * indicar nulidade; aqui eles são Double? (aceitam nulo). Isso é
  * necessário porque hoje só o sensor de frequência cardíaca está
- * implementado (HearRateScreen.kt) — saturação de oxigênio e temperatura
+ * implementado (tela Sinais Vitais) — saturação de oxigênio e temperatura
  * corporal ainda não têm sensor lendo. Gravar 0.0 nesses dois campos
  * seria pior: pareceria uma leitura real de valor zero. Assim que os
  * sensores forem adicionados, os campos passam a ser preenchidos.
+ *
+ * Versão 2 do banco: ganhou calorias, passos e distancia (atividade do
+ * dia), que antes apareciam na tela mas não eram salvos.
  */
 @Entity(
     tableName = "monitoramento",
@@ -45,6 +48,18 @@ data class MonitoramentoEntity(
 
     @ColumnInfo(name = "temperatura_corporal")
     val temperaturaCorporal: Double? = null,
+
+    // Colunas novas (versão 2 do banco): atividade física do dia. São
+    // totais acumulados desde a meia-noite, vindos do Health Services.
+    // Ficam nulas nas linhas que só têm batimento, e vice-versa.
+    @ColumnInfo(name = "calorias")
+    val calorias: Double? = null,
+
+    @ColumnInfo(name = "passos")
+    val passos: Long? = null,
+
+    @ColumnInfo(name = "distancia")
+    val distanciaMetros: Double? = null,
 
     @ColumnInfo(name = "data_hora")
     val dataHora: Long,
