@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Meu Site</title>
+  <style>
+    body { margin: 0; padding-top: 44px; font-family: sans-serif; }
+ 
+    #a11y-bar {
+      position: fixed; top: 0; left: 0; right: 0; height: 44px;
+      background: #f5f5f3; border-bottom: 1px solid #ddd;
+      display: flex; align-items: center; gap: 6px; padding: 0 14px;
+      font-family: sans-serif; z-index: 9999; flex-wrap: wrap;
+    }
+    #a11y-bar button {
+      font-size: 12px; padding: 4px 10px; border-radius: 5px;
+      border: 1px solid #ccc; background: #fff; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 5px;
+    }
+    #a11y-bar button:hover { background: #eee; }
+    #a11y-bar button.on { background: #dbeeff; border-color: #3a8fd8; color: #0a4a80; }
+ 
+    /* Leitor */
+    #btn-reader { background: #1a6e3c; border-color: #1a6e3c; color: #fff; }
+    #btn-reader:hover { background: #155730; }
+    #btn-reader.on { background: #0f3d22; border-color: #0f3d22; color: #fff; }
+ 
+ 
+    /* ── Leitor: destaque da palavra lida ── */
+    .reading-highlight { background: #fff176; border-radius: 3px; }
+ 
+    body.hc { background: #000 !important; color: #fff !important; }
+    body.hc * { color: #fff !important; background: #000 !important; }
+    body.dyslexia * { font-family: Georgia, serif !important; }
+    body.spacing * { letter-spacing: 0.08em !important; line-height: 2 !important; word-spacing: 0.2em !important; }
+  </style>
+ 
+
+</head>
+<body>
+ 
+  <!-- ── Barra de acessibilidade ── -->
+  <div id="a11y-bar">
+ 
+    <button onclick="changeFont(-10)">A−</button>
+    <span id="fval" style="font-size:12px;min-width:36px;text-align:center">100%</span>
+    <button onclick="changeFont(10)">A+</button>
+ 
+    <button id="b-hc"       onclick="toggle('hc','b-hc')">Contraste</button>
+    <button id="b-spacing"  onclick="toggle('spacing','b-spacing')">Espaçamento</button>
+    <button id="b-dyslexia" onclick="toggle('dyslexia','b-dyslexia')">Dislexia</button>
+ 
+    <!-- Leitor de sites -->
+    <button id="btn-reader" onclick="toggleReader()" aria-pressed="false" title="Leitor de sites — clique em qualquer texto para ouvir">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="currentColor" stroke-width="1.8" fill="none"/>
+        <path d="M9 22V12h6v10" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M8 6.5c1-.8 2.5-1 4 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+        <circle cx="19" cy="18" r="4" fill="currentColor"/>
+        <path d="M17.5 18l1 1 2-2" stroke="#fff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Leitor de sites
+    </button>
+ 
+    <button onclick="reset()" style="margin-left:auto;color:#888;border-color:transparent;background:transparent">Redefinir</button>
+  </div>
+ 
+ 
+ 
+  <!-- ── SEU CONTEÚDO AQUI ── -->
+  <main style="max-width:680px;margin:40px auto;padding:0 20px;line-height:1.7">
+    <h1>Título da página</h1>
+    <p>Substitua este conteúdo pelo seu. Com o <strong>Leitor de sites</strong> ativo, clique em qualquer parágrafo ou título para ouvir o texto em voz alta. O <strong>Modo daltônico</strong> aplica filtros de cor para simular e compensar diferentes tipos de daltonismo.</p>
+    <h2>Recursos disponíveis</h2>
+    <p>A barra oferece controle de tamanho de fonte, alto contraste, espaçamento ampliado, fonte para dislexia, leitor de voz e filtros para daltonismo — tudo sem depender de bibliotecas externas.</p>
+    <h2>Como usar o leitor</h2>
+    <p>Ative o botão verde "Leitor de sites" e depois clique em qualquer trecho de texto. A síntese de voz do próprio navegador lerá o conteúdo em português, destacando cada palavra conforme é lida.</p>
+  </main>
+ 
+ 
+  <!-- ── JavaScript ── -->
+  <script>
+    var size = 100;
+    var readerOn = false;
+    var currentDalton = '';
+    var synth = window.speechSynthesis;
+    var utterance = null;
+ 
+    /* ── Fonte ── */
+    function changeFont(d) {
+      size = Math.min(140, Math.max(80, size + d));
+      document.documentElement.style.fontSize = size + '%';
+      document.getElementById('fval').textContent = size + '%';
+    }
+ 
+    /* ── Toggles simples ── */
+    function toggle(cls, btnId) {
+      document.body.classList.toggle(cls);
+      document.getElementById(btnId).classList.toggle('on');
+    }
+ 
+    /* ── Leitor de sites ── */
+    function toggleReader() {
+      readerOn = !readerOn;
+      var btn = document.getElementById('btn-reader');
+      btn.classList.toggle('on', readerOn);
+      btn.setAttribute('aria-pressed', readerOn);
+      document.body.style.cursor = readerOn ? 'crosshair' : '';
+      if (!readerOn && synth) { synth.cancel(); removeHighlights(); }
+    }
+ 
+    function getTextOf(el) {
+      return (el.innerText || el.textContent || '').trim();
+    }
+ 
+    function removeHighlights() {
+      document.querySelectorAll('.reading-highlight').forEach(function(s) {
+        var parent = s.parentNode;
+        parent.replaceChild(document.createTextNode(s.textContent), s);
+        parent.normalize();
+      });
+    }
+ 
+    function speakElement(el) {
+      if (!synth) { alert('Seu navegador não suporta síntese de voz.'); return; }
+      synth.cancel();
+      removeHighlights();
+      var text = getTextOf(el);
+      if (!text) return;
+ 
+      utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'pt-BR';
+      utterance.rate = 0.95;
+ 
+      /* Destaque palavra por palavra */
+      var words = text.split(/\s+/);
+      var spans = [];
+      el.innerHTML = words.map(function(w, i) {
+        return '<span class="rw" data-i="' + i + '">' + w + '</span>';
+      }).join(' ');
+      spans = el.querySelectorAll('.rw');
+ 
+      utterance.onboundary = function(e) {
+        spans.forEach(function(s) { s.classList.remove('reading-highlight'); });
+        var charIndex = e.charIndex;
+        var count = 0;
+        for (var i = 0; i < words.length; i++) {
+          if (count >= charIndex) { if (spans[i]) spans[i].classList.add('reading-highlight'); break; }
+          count += words[i].length + 1;
+        }
+      };
+ 
+      utterance.onend = function() {
+        removeHighlights();
+        el.innerHTML = words.join(' ');
+      };
+ 
+      synth.speak(utterance);
+    }
+ 
+    document.addEventListener('click', function(e) {
+      if (!readerOn) return;
+      var tags = ['P','H1','H2','H3','H4','H5','H6','LI','TD','TH','SPAN','A','LABEL'];
+      var el = e.target;
+      while (el && el !== document.body) {
+        if (tags.indexOf(el.tagName) !== -1) { speakElement(el); return; }
+        el = el.parentElement;
+      }
+    });
+ 
+    /* ── Redefinir ── */
+    function reset() {
+      size = 100;
+      document.documentElement.style.fontSize = '100%';
+      document.getElementById('fval').textContent = '100%';
+      ['hc','spacing','dyslexia'].forEach(function(c) { document.body.classList.remove(c); });
+      ['b-hc','b-spacing','b-dyslexia'].forEach(function(id) { document.getElementById(id).classList.remove('on'); });
+      setDalton('');
+      var menu = document.getElementById('dalton-menu');
+      menu.classList.remove('open');
+      document.body.classList.remove('has-dalton-menu');
+      document.getElementById('btn-dalton').setAttribute('aria-expanded', false);
+      document.getElementById('btn-dalton').classList.remove('on');
+      if (readerOn) toggleReader();
+    }
+  </script>
+ 
+</body>
+</html>

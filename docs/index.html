@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <link rel="stylesheet" href="index.css">
+    <title>Index</title>
+</head>
+
+<body>
+ 
+    <!--- Acessibilidade -->
+    <div id="a11y-bar">
+ <div class="a11y-group" role="group" aria-label="Tamanho da fonte">
+        <button id="b-fdec" onclick="changeFont(-10)" aria-label="Diminuir tamanho da fonte" title="Diminuir fonte">A−</button>
+        <span id="fval" aria-live="polite">100%</span>
+        <button id="b-finc" onclick="changeFont(10)" aria-label="Aumentar tamanho da fonte" title="Aumentar fonte">A+</button>
+      </div>
+
+      <div class="a11y-group">
+        <span class="a11y-label" aria-hidden="true">Fonte:</span>
+        <select id="font-select" onchange="changeFontFamily(this.value)" aria-label="Escolher fonte do site">
+          <option value="quicksand">Quicksand</option>
+          <option value="arial">Arial</option>
+          <option value="opendyslexic">OpenDyslexic</option>
+        </select>
+      </div>
+     
+      <button id="b-spacing"  onclick="toggle('spacing','b-spacing')">Espaçamento</button>
+   
+      <!-- Leitor de sites -->
+      <button id="btn-reader" onclick="toggleReader()" aria-pressed="false"
+            title="Leitor de sites — clique em qualquer texto para ouvir">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="currentColor" stroke-width="1.8" fill="none"/>
+        <path d="M9 22V12h6v10" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M8 6.5c1-.8 2.5-1 4 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+        <circle cx="19" cy="18" r="4" fill="currentColor"/>
+        <path d="M17.5 18l1 1 2-2" stroke="#fff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Leitor de sites
+    </button>
+   
+      <!--<button onclick="reset()" style="margin-left:auto;color:#888;border-color:transparent;background:transparent">Redefinir</button> -->
+    </div>
+    
+    <!--- Menu -->
+    <nav>
+      <!--- Logo -->
+      <a class="logo" href="index.html" onclick="showPage('home'); return false;">
+        <img src="AliraLOgo.png" alt="Logo"/>
+      </a>
+  
+      <ul class="nav-links">
+        <li><a href="index.html" id="link-sobre"    onclick="showPage('sobre'); return false;">Home</a></li>
+        <li><a href="#Rodapé" id="link-contato">Contato</a></li>
+        <li><a href="produtos.html">Produto</a></li>
+      </ul>
+  </nav>
+     <div class="wrapper" id="home">
+    
+        <div class="carrossel">
+          <div class="slides">
+    
+            <div class="slide">
+              <img src="alira principal.png" >
+            </div>
+    
+            <div class="slide">
+              <img src="2.png">
+            </div>
+
+            <div class="slide">
+              <img src="3.png">
+            </div>
+
+        </div>
+    </div>
+
+   
+
+ <!-- Texto Sobre-->
+
+    <div class="about" id="sobre">
+ 
+      <!-- Bloco 1: relógio + título + prévia -->
+      <div class="about-content">
+        <img src="relogione.png" alt="Relógio Alira">
+        <div class="about-text">
+          <h1>Como nasceu a <span>ALIRA COMPANY</span></h1>
+          <p>A <strong>Alira Company</strong> nasceu da união de quatro amigos que compartilhavam um propósito: tornar o dia a dia das pessoas com deficiência mais <strong>simples, seguro e independente</strong>.</p>
+        </div>
+      </div>
+ 
+      <!-- Bloco 2: restante do texto, em largura total -->
+      <div class="about-full">
+        <p>A partir dessa ideia, surgiu o desejo de transformar tecnologia em uma ferramenta de inclusão. Foi assim que desenvolvemos uma solução que conecta <strong>smartwatch e smartphone</strong>, permitindo que recursos e informações importantes estejam sempre ao alcance do usuário.</p>
+        <p>Mais do que criar um aplicativo, a Alira Company busca desenvolver uma tecnologia que <strong>facilite a rotina, amplie a autonomia e proporcione mais segurança e tranquilidade</strong> para pessoas com deficiência e suas famílias.</p>
+        <p>Nossa jornada começou com uma ideia entre amigos, mas hoje seguimos construindo um futuro em que <strong>acessibilidade, inovação e tecnologia caminham lado a lado</strong>.</p>
+      </div>
+    </div>
+
+
+<!-- Seção dos criadores-->
+<div class="criadores">
+  <h2 class="tituloCri">Criadores</h2>
+
+  <div class="geralcri">
+
+    <div class="criador">
+      <img src="felipe.png" alt="Felipe Gonçalves Rocha">
+      <div class="criador-info">
+        <h1>Felipe Gonçalves Rocha</h1>
+        <p>LinkedIn: <a href="https://www.linkedin.com/in/yasmin-guedes-62366b428?utm_source=share_via&utm_content=profile&utm_medium=member_ios" target="_blank" rel="noopener noreferrer">Felipe Gonçalves</a></p>
+        <p>Email: felipegoncalves01052008@gmail.com</p>
+      </div>
+    </div>
+
+    <div class="criador">
+      <img src="iasmyn.png" alt="Iasmyn Pereira da Silva">
+      <div class="criador-info">
+        <h1>Iasmyn Pereira da Silva</h1>
+        <p>LinkedIn: <a href="https://www.linkedin.com/in/yasmin-guedes-62366b428?utm_source=share_via&utm_content=profile&utm_medium=member_ios" target="_blank" rel="noopener noreferrer">Iasmyn Pereira</a></p>
+        <p>Email: iasmyn@myyahoo.com</p>
+      </div>
+    </div>
+
+    <div class="criador">
+      <img src="raphael.png" alt="Raphael Martins Santos">
+      <div class="criador-info">
+        <h1>Raphael Martins Santos</h1>
+        <p>LinkedIn: <a href="https://www.linkedin.com/in/falculista?utm_source=share_via&utm_content=profile&utm_medium=member_android" target="_blank" rel="noopener noreferrer">Raphael Martins</a></p>
+        <p>Email: raphamartinssantos@hotmail.com</p>
+      </div>
+    </div>
+
+    <div class="criador">
+      <img src="yasmin.jpeg" alt="Yasmin Pietra de Andrade Guedes">
+      <div class="criador-info">
+        <h1>Yasmin Pietra de Andrade Guedes</h1>
+        <p>LinkedIn: <a href="https://www.linkedin.com/in/yasmin-guedes-62366b428?utm_source=share_via&utm_content=profile&utm_medium=member_ios" target="_blank" rel="noopener noreferrer">Yasmin Guedes</a></p>
+        <p>Email: guedes.yasminp@gmail.com</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Rodapé -->
+      <footer>
+        <div class="footer-container" id="Rodapé">
+          <div class="footer-grid">
+    
+            <div class="footer-brand">
+              <p class="brand-logo"> <span class="l1">A</span>
+                <span class="l2">L</span>
+                <span class="l3">I</span>
+                <span class="l4">R</span>
+                <span class="l5">A</span></p>
+              <p class="brand-desc">O aplicativo de acessibilidade para o seu smartwatch. Tecnologia inclusiva que torna o dia a dia mais simples, prático e acessível para todos.</p>
+            </div>
+    
+            <div class="footer-col">
+              <h4>Navegação</h4>
+              <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#sobre">Sobre</a></li>
+                <li><a href="produtos.html">Funcionalidades</a></li>
+                <li><a href="#Rodapé">Contato</a></li>
+              </ul>
+            </div>
+    
+            <div class="footer-col">
+              <h4>Contato</h4>
+              <ul>
+                <li><span>alira.acessibilidade@gmail.com</span></li>
+                <li><span>+55 (11) 99627-5222</span></li>
+                <li><span>São Paulo, SP</span></li>
+              </ul>
+            </div>
+    
+          </div>
+    
+          <div class="footer-bottom">
+            <p>© 2026 Alira. Todos os direitos reservados.</p>
+            <p><a href="#">Política de privacidade</a> · <a href="#">Termos de uso</a></p>
+          </div>
+        </div>
+      </footer>
+
+  
+  <script src="index.js"></script>
+</body>
+</html>
